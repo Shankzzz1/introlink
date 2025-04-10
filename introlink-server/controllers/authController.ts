@@ -1,13 +1,17 @@
 import { Request, Response } from 'express';
-import { User } from '../models/User';
+import { User } from '../models/user';
 import { hashPassword } from '../utils/hash';
 
-export const signup = async (req: Request, res: Response) => {
+export const signup = async (req: Request, res: Response): Promise<void> => {
   const { fullName, email, password } = req.body;
+  console.log(req.body)
 
   try {
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(409).json({ message: 'User already exists' });
+    if (existingUser) {
+      res.status(409).json({ message: 'User already exists' });
+      return;
+    }
 
     const hashed = await hashPassword(password);
 

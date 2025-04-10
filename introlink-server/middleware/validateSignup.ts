@@ -1,15 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 
-export const validateSignup = (req: Request, res: Response, next: NextFunction) => {
-  const { fullName, email, password, confirmPassword } = req.body;
+export const validateSignup = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  const { username, email, password } = req.body;
 
-  if (!fullName || !email || !password || !confirmPassword) {
-    return res.status(400).json({ message: 'All fields are required' });
+  if (!username || !email || !password) {
+    res.status(400).json({ error: 'All fields are required' });
+    return;
   }
 
-  if (password !== confirmPassword) {
-    return res.status(400).json({ message: 'Passwords do not match' });
-  }
-
+  // Call next only when validation passes
   next();
 };

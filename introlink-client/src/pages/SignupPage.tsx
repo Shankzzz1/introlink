@@ -21,26 +21,44 @@ const SignupPage: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate passwords match
+
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords don't match");
       return;
     }
-    
-    // Handle signup logic here
-    console.log('Signup submitted:', formData);
+
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await res.json();
+      console.log(res)
+
+      if (res.ok) {
+        alert('Signup successful! Please login.');
+        // redirect or clear form if needed
+      } else {
+        alert(data.message || 'Signup failed');
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      alert('Something went wrong. Please try again later.');
+    }
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(prev => !prev);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(prev => !prev);
-  };
+  const togglePasswordVisibility = () => setShowPassword(prev => !prev);
+  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(prev => !prev);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-50 p-4">
@@ -52,11 +70,8 @@ const SignupPage: React.FC = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
-            {/* Full Name Input */}
             <div>
-              <label htmlFor="fullName" className="block text-sm font-light text-gray-700 mb-1">
-                Full Name
-              </label>
+              <label htmlFor="fullName" className="block text-sm font-light text-gray-700 mb-1">Full Name</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <User size={18} className="text-gray-400" />
@@ -74,11 +89,8 @@ const SignupPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Email Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-light text-gray-700 mb-1">
-                Email
-              </label>
+              <label htmlFor="email" className="block text-sm font-light text-gray-700 mb-1">Email</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail size={18} className="text-gray-400" />
@@ -96,17 +108,14 @@ const SignupPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Password Input */}
             <div>
-              <label htmlFor="password" className="block text-sm font-light text-gray-700 mb-1">
-                Password
-              </label>
+              <label htmlFor="password" className="block text-sm font-light text-gray-700 mb-1">Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock size={18} className="text-gray-400" />
                 </div>
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
                   value={formData.password}
@@ -120,27 +129,20 @@ const SignupPage: React.FC = () => {
                   onClick={togglePasswordVisibility}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
-                  {showPassword ? (
-                    <EyeOff size={18} className="text-gray-400 hover:text-gray-600" />
-                  ) : (
-                    <Eye size={18} className="text-gray-400 hover:text-gray-600" />
-                  )}
+                  {showPassword ? <EyeOff size={18} className="text-gray-400 hover:text-gray-600" /> : <Eye size={18} className="text-gray-400 hover:text-gray-600" />}
                 </button>
               </div>
               <p className="mt-1 text-xs text-gray-500">Must be at least 8 characters</p>
             </div>
 
-            {/* Confirm Password Input */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-light text-gray-700 mb-1">
-                Confirm Password
-              </label>
+              <label htmlFor="confirmPassword" className="block text-sm font-light text-gray-700 mb-1">Confirm Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock size={18} className="text-gray-400" />
                 </div>
                 <input
-                  type={showConfirmPassword ? "text" : "password"}
+                  type={showConfirmPassword ? 'text' : 'password'}
                   id="confirmPassword"
                   name="confirmPassword"
                   value={formData.confirmPassword}
@@ -154,16 +156,11 @@ const SignupPage: React.FC = () => {
                   onClick={toggleConfirmPasswordVisibility}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
-                  {showConfirmPassword ? (
-                    <EyeOff size={18} className="text-gray-400 hover:text-gray-600" />
-                  ) : (
-                    <Eye size={18} className="text-gray-400 hover:text-gray-600" />
-                  )}
+                  {showConfirmPassword ? <EyeOff size={18} className="text-gray-400 hover:text-gray-600" /> : <Eye size={18} className="text-gray-400 hover:text-gray-600" />}
                 </button>
               </div>
             </div>
 
-            {/* Terms Checkbox */}
             <div className="flex items-start">
               <div className="flex items-center h-5">
                 <input
@@ -178,19 +175,14 @@ const SignupPage: React.FC = () => {
               </div>
               <div className="ml-3 text-sm">
                 <label htmlFor="agreeToTerms" className="font-light text-gray-700">
-                  I agree to the{" "}
-                  <Link to="/terms" className="text-blue-600 hover:text-blue-500">
-                    Terms
-                  </Link>{" "}
-                  and{" "}
-                  <Link to="/privacy" className="text-blue-600 hover:text-blue-500">
-                    Privacy Policy
-                  </Link>
+                  I agree to the{' '}
+                  <Link to="/terms" className="text-blue-600 hover:text-blue-500">Terms</Link>{' '}
+                  and{' '}
+                  <Link to="/privacy" className="text-blue-600 hover:text-blue-500">Privacy Policy</Link>
                 </label>
               </div>
             </div>
 
-            {/* Signup Button */}
             <div>
               <button
                 type="submit"
@@ -202,7 +194,6 @@ const SignupPage: React.FC = () => {
           </div>
         </form>
 
-        {/* Divider */}
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -214,7 +205,6 @@ const SignupPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Social Signup Buttons */}
         <div className="mt-6 grid grid-cols-2 gap-3">
           <button
             type="button"
@@ -234,10 +224,9 @@ const SignupPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Login Link */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600 font-light">
-            Already have an account?{" "}
+            Already have an account?{' '}
             <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200">
               Log in
             </Link>
