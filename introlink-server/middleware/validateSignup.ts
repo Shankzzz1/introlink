@@ -1,17 +1,20 @@
-import { Request, Response, NextFunction } from 'express';
+import { RequestHandler } from 'express';
 
-export const validateSignup = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  const { username, email, password } = req.body;
+export const validateSignup: RequestHandler = (req, res, next) => {
+  const { fullName, email, password, isGoogleSignIn, token } = req.body;
 
-  if (!username || !email || !password) {
+  if (isGoogleSignIn) {
+    if (!token) {
+      res.status(400).json({ error: 'Google token is required' });
+      return;
+    }
+    return next();
+  }
+
+  if (!fullName || !email || !password) {
     res.status(400).json({ error: 'All fields are required' });
     return;
   }
 
-  // Call next only when validation passes
-  next();
+  return next();
 };

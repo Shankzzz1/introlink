@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Github } from 'lucide-react';
+import axios from 'axios'; // Import axios for the Google signup
 
 const SignupPage: React.FC = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -10,14 +12,14 @@ const SignupPage: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    agreeToTerms: false
+    agreeToTerms: false,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
@@ -43,11 +45,17 @@ const SignupPage: React.FC = () => {
       });
 
       const data = await res.json();
-      console.log(res)
 
       if (res.ok) {
         alert('Signup successful! Please login.');
-        // redirect or clear form if needed
+        setFormData({
+          fullName: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          agreeToTerms: false,
+        });
+        navigate('/login');
       } else {
         alert(data.message || 'Signup failed');
       }
@@ -59,6 +67,30 @@ const SignupPage: React.FC = () => {
 
   const togglePasswordVisibility = () => setShowPassword(prev => !prev);
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(prev => !prev);
+
+  // Fix: Make this function async and properly handle the Google signup
+  const handleGoogleSignup = async () => {
+    try {
+      // You need to handle obtaining the email, fullName, and token from Google sign-in
+      const email = 'shashankmgavale@gmail.com'; // Replace with actual data from Google Sign-In
+      const fullName = 'Shashank Gavale'; // Replace with actual data from Google Sign-In
+      const token = 'some_google_token'; // Replace with actual Google token
+
+      await axios.post('http://localhost:5000/api/auth/google', {
+        email,
+        fullName,
+        token,
+        isGoogleSignIn: true,
+      });
+    } catch (error) {
+      console.error('Google Signup Error:', error);
+      alert('Google Signup failed. Please try again.');
+    }
+  };
+
+  const handleGithubSignup = () => {
+    // Implement Github signup logic here
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-50 p-4">
@@ -208,29 +240,23 @@ const SignupPage: React.FC = () => {
         <div className="mt-6 grid grid-cols-2 gap-3">
           <button
             type="button"
+            onClick={handleGoogleSignup}
             className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200"
           >
             <svg className="h-5 w-5 text-red-500" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81z" />
+              <path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.17 2C7.5 2 4 5.5 4 9.94c0 4.2 3.4 7.64 7.5 7.64 4 0 7.5-3.64 7.5-7.72" />
             </svg>
             <span className="ml-2">Google</span>
           </button>
+
           <button
             type="button"
+            onClick={handleGithubSignup}
             className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200"
           >
-            <Github size={20} className="text-gray-800" />
+            <Github className="h-5 w-5 text-gray-600" />
             <span className="ml-2">GitHub</span>
           </button>
-        </div>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600 font-light">
-            Already have an account?{' '}
-            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200">
-              Log in
-            </Link>
-          </p>
         </div>
       </div>
     </div>
