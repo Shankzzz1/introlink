@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, Github } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
@@ -9,6 +9,7 @@ const LoginPage: React.FC = () => {
     password: '',
     rememberMe: false
   });
+  const navigate = useNavigate(); // useNavigate hook for redirection
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -18,11 +19,40 @@ const LoginPage: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login submitted:', formData);
+  
+    try {
+      // Send login request to backend API
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.emailOrUsername, // Ensure this is the correct field
+          password: formData.password,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      // Handle response
+      if (response.ok) {
+        console.log('Login successful:', data);
+        // Store the token or perform any actions after successful login
+        localStorage.setItem('token', data.token); // Example of storing JWT token
+        navigate('/'); // Redirect after successful login
+      } else {
+        console.error('Login failed:', data.message);
+        alert(data.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      alert('Something went wrong. Please try again later.');
+    }
   };
+  
 
   const togglePasswordVisibility = () => {
     setShowPassword(prev => !prev);
