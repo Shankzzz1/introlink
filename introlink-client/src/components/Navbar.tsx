@@ -26,8 +26,8 @@ const Navbar: React.FC<NavbarProps> = ({ logo = "Your Logo" }) => {
 
           {/* Desktop nav links */}
           <div className="hidden md:flex items-center space-x-4">
-            <a href="#" className="px-3 py-2 text-gray-700 hover:text-blue-600">Home</a>
-            <a href="#" className="px-3 py-2 text-gray-700 hover:text-blue-600">Forums</a>
+            <a href="/" className="px-3 py-2 text-gray-700 hover:text-blue-600">Home</a>
+            <a href="/forum" className="px-3 py-2 text-gray-700 hover:text-blue-600">Forums</a>
             <a href="#" className="px-3 py-2 text-gray-700 hover:text-blue-600">Journal</a>
             <a href="#" className="px-3 py-2 text-gray-700 hover:text-blue-600">AI Chat</a>
             <a href="#" className="px-3 py-2 text-gray-700 hover:text-blue-600">Profile</a>
