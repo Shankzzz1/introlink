@@ -5,7 +5,7 @@ interface NavbarProps {
   logo?: string;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ logo = "Your Logo" }) => {
+const Navbar: React.FC<NavbarProps> = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, ThumbsUp, MessageSquare, Flag, Share2, Clock, Send, MoreHorizontal } from 'lucide-react';
+import {  ThumbsUp, MessageSquare, Flag, Share2, Clock, Send, MoreHorizontal } from 'lucide-react';
 
 interface Thread {
   id: number;

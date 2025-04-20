@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, ArrowLeft, HelpCircle } from 'lucide-react';
+import axios from 'axios';
 
 interface Category {
   id: number;
@@ -102,17 +103,29 @@ const CreateThread: React.FC = () => {
     return isValid;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
-      // In a real app, you would submit this data to your API
-      console.log('Submitting thread:', formData);
-      alert('Thread created successfully!');
-      
-      // Navigate to the thread page or category page
-      // In a real app, you would navigate to the newly created thread
-      navigate('/category/' + formData.categoryId);
+      try {
+        // Send the data to your backend API (make sure the endpoint is correct)
+        const response = await axios.post('http://localhost:5000/api/threads/threads', {
+          title: formData.title,
+          content: formData.content,
+          categoryId: formData.categoryId,
+          tags: formData.tags
+        });
+        
+        // Assuming the backend returns success on successful thread creation
+        if (response.status === 201) {
+          alert('Thread created successfully!');
+          // Navigate to the category page after successful thread creation
+          navigate('/category/' + formData.categoryId);
+        }
+      } catch (error) {
+        console.error('Error creating thread:', error);
+        alert('An error occurred while creating the thread. Please try again.');
+      }
     }
   };
 
@@ -249,50 +262,33 @@ const CreateThread: React.FC = () => {
               </button>
             </div>
             <p className="text-xs text-gray-500 mb-2">
-              Press Enter or click Add after each tag. Separate multiple tags with commas.
+              Press Enter or click Add to add a tag.
             </p>
-            
-            {formData.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {formData.tags.map((tag, index) => (
-                  <span 
-                    key={index} 
-                    className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
-                  >
-                    {tag}
-                    <button 
-                      type="button" 
-                      onClick={() => handleRemoveTag(tag)} 
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      <X size={14} />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
+            <div className="flex gap-2">
+              {formData.tags.map(tag => (
+                <span key={tag} className="px-4 py-1 bg-gray-200 text-gray-700 rounded-lg flex items-center gap-1">
+                  {tag}
+                  <X
+                    size={12}
+                    onClick={() => handleRemoveTag(tag)}
+                    className="cursor-pointer text-red-500"
+                  />
+                </span>
+              ))}
+            </div>
           </div>
 
-          {/* Submit Buttons */}
-          <div className="flex items-center justify-end gap-4 mt-8 pt-4 border-t border-gray-100">
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
-            >
-              Cancel
-            </button>
+          {/* Submit Button */}
+          <div className="flex justify-center mt-8">
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+              className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Create Thread
             </button>
           </div>
         </div>
       </form>
-
-      {/* Guidelines */}
       <div className="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
         <h3 className="font-medium text-yellow-800 mb-2">Community Guidelines</h3>
         <ul className="list-disc pl-5 text-sm text-yellow-700 space-y-1">

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Search, PlusCircle, Flame, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -23,103 +24,25 @@ interface Thread {
 
 const ForumHomePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [trendingThreads, setTrendingThreads] = useState<Thread[]>([]);
 
-  const categories: Category[] = [
-    { 
-      id: 1, 
-      name: 'General Discussion', 
-      description: 'Talk about anything and everything',
-      icon: '💬',
-      postCount: 1243,
-      color: 'bg-blue-100'
-    },
-    { 
-      id: 2, 
-      name: 'Mental Health', 
-      description: 'Get assistance with your questions',
-      icon: '🧠',
-      postCount: 867,
-      color: 'bg-green-100'
-    },
-    { 
-      id: 3, 
-      name: 'News & Announcements', 
-      description: 'Latest updates and information',
-      icon: '📢',
-      postCount: 456,
-      color: 'bg-yellow-100'
-    },
-    { 
-      id: 4, 
-      name: 'Showcase', 
-      description: 'Show off your work and projects',
-      icon: '✨',
-      postCount: 752,
-      color: 'bg-purple-100'
-    },
-    { 
-      id: 5, 
-      name: 'Feedback', 
-      description: 'Share your thoughts and suggestions',
-      icon: '📝',
-      postCount: 321,
-      color: 'bg-pink-100'
-    },
-    { 
-      id: 6, 
-      name: 'Off-Topic', 
-      description: 'Discussions not related to main topics',
-      icon: '🎭',
-      postCount: 987,
-      color: 'bg-indigo-100'
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [categoryRes, threadRes] = await Promise.all([
+          axios.get('http://localhost:5000/api/categories'),
+          axios.get('http://localhost:5000/api/threads/trending')
+        ]);
+        setCategories(categoryRes.data);
+        setTrendingThreads(threadRes.data);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      }
+    };
 
-  const trendingThreads: Thread[] = [
-    {
-      id: 1,
-      title: 'How to optimize React performance in large applications',
-      author: 'ReactMaster',
-      category: 'Help & Support',
-      replies: 42,
-      lastActive: '2 hours ago',
-      isHot: true
-    },
-    {
-      id: 2,
-      title: 'Tailwind vs. CSS Modules - The ultimate showdown',
-      author: 'CSSWizard',
-      category: 'General Discussion',
-      replies: 87,
-      lastActive: '4 hours ago',
-      isHot: true
-    },
-    {
-      id: 3,
-      title: 'Upcoming features in TypeScript 5.4',
-      author: 'TypeScriptFan',
-      category: 'News & Announcements',
-      replies: 29,
-      lastActive: '1 day ago'
-    },
-    {
-      id: 4,
-      title: 'Check out my new project built with Vite!',
-      author: 'ViteEnthusiast',
-      category: 'Showcase',
-      replies: 15,
-      lastActive: '3 hours ago'
-    },
-    {
-      id: 5,
-      title: 'What are your favorite VS Code extensions?',
-      author: 'CodeEditor',
-      category: 'General Discussion',
-      replies: 53,
-      lastActive: '5 hours ago',
-      isHot: true
-    }
-  ];
+    fetchData();
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
