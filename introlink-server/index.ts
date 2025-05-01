@@ -1,10 +1,11 @@
-    import express from 'express';
-    import dotenv from 'dotenv';
-    import cors from 'cors';
-    import authRoutes from './routes/authRoutes';
-    // import threadRoutes from './routes/ThreadRoutes';        
-    // import categoryRoutes from './routes/CategoryRoutes';
-    import { connectDB } from './config/db';
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import authRoutes from './routes/authRoutes';
+import { connectDB } from './config/db';
+import forumRoutes from './routes/forumRoutes';
+import { errorHandler } from './middleware/ErrorHandler';
+import homeRoutes from './routes/homeRoutes';
 
     dotenv.config();
 
@@ -17,8 +18,10 @@
     
 
     app.use('/api/auth', authRoutes);
-    // app.use('/api/categories', categoryRoutes);
-    // app.use('/api/threads', threadRoutes);
+    app.use('/api', forumRoutes);
+    app.use('/api', homeRoutes);
+    app.use(errorHandler);
+    
 
     connectDB();
 

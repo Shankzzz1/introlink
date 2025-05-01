@@ -32,25 +32,25 @@ interface Category {
 type SortOption = 'newest' | 'popular' | 'most-liked' | 'most-viewed';
 
 const ForumCategoryPage: React.FC = () => {
-  const { categoryId } = useParams<{ categoryId: string }>();
-  const [category, setCategory] = useState<Category | null>(null);
+  const { category } = useParams<{ category: string }>();
+  const [categoryData, setCategoryData] = useState<Category | null>(null);
   const [threads, setThreads] = useState<Thread[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!categoryId) return;
+    if (!category) return;
 
     const fetchData = async () => {
       setLoading(true);
       try {
         const [catRes, threadsRes] = await Promise.all([
-          axios.get(`/api/categories/${categoryId}`),
-          axios.get(`/api/categories/${categoryId}/threads?sort=${sortBy}`)
+          axios.get(`http://localhost:5000/api/categories/name/${category}`),
+          axios.get(`http://localhost:5000/api/categories/name/${category}/threads?sort=${sortBy}`)
         ]);
 
-        setCategory(catRes.data);
+        setCategoryData(catRes.data);
         setThreads(threadsRes.data);
       } catch (error) {
         console.error('Error loading category or threads:', error);
@@ -60,7 +60,7 @@ const ForumCategoryPage: React.FC = () => {
     };
 
     fetchData();
-  }, [categoryId, sortBy]);
+  }, [category, sortBy]);
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -79,7 +79,7 @@ const ForumCategoryPage: React.FC = () => {
     return <div className="text-center py-10 text-gray-500">Loading...</div>;
   }
 
-  if (!category) {
+  if (!categoryData) {
     return <div className="text-center py-10 text-red-500">Category not found.</div>;
   }
 
@@ -87,13 +87,13 @@ const ForumCategoryPage: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header & Breadcrumbs */}
       <div className="flex items-center mb-6">
-        <Link to="/" className="text-gray-600 hover:text-gray-900">
+        <Link to="/forum" className="text-gray-600 hover:text-gray-900">
           <ArrowLeft size={18} />
         </Link>
-        <h1 className="text-2xl font-semibold text-gray-900 ml-4">{category.name}</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 ml-4">{categoryData.name}</h1>
       </div>
       <div className="mb-6 text-gray-600 text-sm">
-        {category.description}
+        {categoryData.description}
       </div>
 
       {/* Sort Dropdown */}

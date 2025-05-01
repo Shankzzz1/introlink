@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Search, PlusCircle, Flame, MessageSquare } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Search, PlusCircle, Flame, MessageSquare } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface Category {
   id: number;
@@ -23,7 +23,7 @@ interface Thread {
 }
 
 const ForumHomePage: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [trendingThreads, setTrendingThreads] = useState<Thread[]>([]);
 
@@ -31,13 +31,13 @@ const ForumHomePage: React.FC = () => {
     const fetchData = async () => {
       try {
         const [categoryRes, threadRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/categories'),
-          axios.get('http://localhost:5000/api/threads/trending')
+          axios.get("http://localhost:5000/api/categories"),
+          axios.get("http://localhost:5000/api/threads/trending"),
         ]);
         setCategories(categoryRes.data);
         setTrendingThreads(threadRes.data);
       } catch (err) {
-        console.error('Error fetching data:', err);
+        console.error("Error fetching data:", err);
       }
     };
 
@@ -49,10 +49,13 @@ const ForumHomePage: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Community Forum</h1>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
+        <Link
+          to="/createthread"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition"
+        >
           <PlusCircle size={20} />
           <span>Create New Post</span>
-        </button>
+        </Link>
       </div>
 
       {/* Search Bar */}
@@ -78,17 +81,26 @@ const ForumHomePage: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((category) => (
-            <Link 
+            <Link
               key={category.id}
-              to={`/forum/${category.name.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}
+              to={`/forum/${category.name
+                .toLowerCase()
+                .replace(/ & /g, "-")
+                .replace(/ /g, "-")}`}
             >
-              <div className={`${category.color} rounded-lg p-6 shadow-sm hover:shadow-md transition cursor-pointer`}>
+              <div
+                className={`${category.color} rounded-lg p-6 shadow-sm hover:shadow-md transition cursor-pointer`}
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{category.icon}</span>
                     <div>
-                      <h3 className="font-medium text-lg text-gray-800">{category.name}</h3>
-                      <p className="text-gray-600 mt-1">{category.description}</p>
+                      <h3 className="font-medium text-lg text-gray-800">
+                        {category.name}
+                      </h3>
+                      <p className="text-gray-600 mt-1">
+                        {category.description}
+                      </p>
                     </div>
                   </div>
                   <div className="bg-white bg-opacity-60 px-3 py-1 rounded-full text-sm font-medium text-gray-700">
@@ -110,14 +122,20 @@ const ForumHomePage: React.FC = () => {
               <span>Trending Discussions</span>
             </div>
           </h2>
-          <a href="#" className="text-blue-600 hover:text-blue-800 font-medium">View all</a>
+          <a href="#" className="text-blue-600 hover:text-blue-800 font-medium">
+            View all
+          </a>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           {trendingThreads.map((thread, index) => (
-            <div 
+            <div
               key={thread.id}
-              className={`p-5 ${index !== trendingThreads.length - 1 ? 'border-b border-gray-200' : ''} hover:bg-gray-50 transition`}
+              className={`p-5 ${
+                index !== trendingThreads.length - 1
+                  ? "border-b border-gray-200"
+                  : ""
+              } hover:bg-gray-50 transition`}
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -126,11 +144,17 @@ const ForumHomePage: React.FC = () => {
                       {thread.title}
                     </h3>
                     {thread.isHot && (
-                      <span className="bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded-full font-medium">Hot</span>
+                      <span className="bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded-full font-medium">
+                        Hot
+                      </span>
                     )}
                   </div>
                   <div className="text-sm text-gray-500 mt-1">
-                    Posted by <span className="font-medium text-gray-700">{thread.author}</span> in <span className="text-blue-600">{thread.category}</span>
+                    Posted by{" "}
+                    <span className="font-medium text-gray-700">
+                      {thread.author}
+                    </span>{" "}
+                    in <span className="text-blue-600">{thread.category}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-6">
@@ -138,7 +162,9 @@ const ForumHomePage: React.FC = () => {
                     <MessageSquare size={16} />
                     <span>{thread.replies}</span>
                   </div>
-                  <div className="text-sm text-gray-500">{thread.lastActive}</div>
+                  <div className="text-sm text-gray-500">
+                    {thread.lastActive}
+                  </div>
                 </div>
               </div>
             </div>

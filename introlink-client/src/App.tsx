@@ -26,9 +26,9 @@ const shashank = {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignupPage/>} />
         <Route path="/forum" element={<Forum/>} />
-        <Route path="/forum/mental-health" element={<ForumCategoryPage/>} />
+        <Route path="/forum/:category" element={<ForumCategoryPage />} />
         <Route path="/thread" element={<ThreadPage/>} />
-        <Route path="/create" element={<CreateThread/>} />
+        <Route path="/createthread" element={<CreateThread/>} />
         <Route path="/reply" element={<ReplyBox threadId={12}/>} />
         <Route path="/card" element={<ThreadCard id="123" title="Shashank" body="Hey My Name is shashak Gavale i developed this introloink use it and enjoy it" replyCount={12} upvotes={25} createdAt={new Date() } user={shashank}/>} />
       </Routes>
