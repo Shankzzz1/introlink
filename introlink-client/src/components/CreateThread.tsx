@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, ArrowLeft, HelpCircle } from 'lucide-react';
 import axios from 'axios';
 
 interface Category {
-  id: number;
+  _id: string;
   name: string;
   description: string;
 }
 
 const CreateThread: React.FC = () => {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState<Category[]>([]);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -25,32 +26,27 @@ const CreateThread: React.FC = () => {
   });
   const [showCategoryHelp, setShowCategoryHelp] = useState(false);
 
-  // Sample categories - in a real app, these would come from an API
-  const categories: Category[] = [
-    { id: 1, name: 'General Discussion', description: 'Talk about anything and everything' },
-    { id: 2, name: 'Help & Support', description: 'Get assistance with your questions' },
-    { id: 3, name: 'News & Announcements', description: 'Latest updates and information' },
-    { id: 4, name: 'Showcase', description: 'Show off your work and projects' },
-    { id: 5, name: 'Mental Health', description: 'Discussions about mental health awareness and support' },
-    { id: 6, name: 'Feedback', description: 'Share your thoughts and suggestions' },
-    { id: 7, name: 'Off-Topic', description: 'Discussions not related to main topics' },
-  ];
+  // Fetch categories from backend
+  useEffect(() => {
+    axios.get('http://localhost:5000/api/createthread')
+      .then(res => setCategories(res.data))
+      .catch(err => console.error('Error fetching categories:', err));
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Clear error when user starts typing
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
   const handleAddTag = () => {
-    if (currentTag.trim() && !formData.tags.includes(currentTag.trim())) {
+    const tag = currentTag.trim();
+    if (tag && !formData.tags.includes(tag)) {
       setFormData(prev => ({
         ...prev,
-        tags: [...prev.tags, currentTag.trim()]
+        tags: [...prev.tags, tag]
       }));
       setCurrentTag('');
     }
@@ -71,11 +67,7 @@ const CreateThread: React.FC = () => {
   };
 
   const validateForm = (): boolean => {
-    const newErrors = {
-      title: '',
-      content: '',
-      categoryId: ''
-    };
+    const newErrors = { title: '', content: '', categoryId: '' };
     let isValid = true;
 
     if (!formData.title.trim()) {
@@ -105,27 +97,23 @@ const CreateThread: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (validateForm()) {
-      try {
-        // Send the data to your backend API (make sure the endpoint is correct)
-        const response = await axios.post('http://localhost:5000/api/threads/threads', {
-          title: formData.title,
-          content: formData.content,
-          categoryId: formData.categoryId,
-          tags: formData.tags
-        });
-        
-        // Assuming the backend returns success on successful thread creation
-        if (response.status === 201) {
-          alert('Thread created successfully!');
-          // Navigate to the category page after successful thread creation
-          navigate('/category/' + formData.categoryId);
-        }
-      } catch (error) {
-        console.error('Error creating thread:', error);
-        alert('An error occurred while creating the thread. Please try again.');
+    if (!validateForm()) return;
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/threads/threads', {
+        title: formData.title,
+        content: formData.content,
+        categoryId: formData.categoryId,
+        tags: formData.tags
+      });
+
+      if (response.status === 201) {
+        alert('Thread created successfully!');
+        navigate('/category/' + formData.categoryId);
       }
+    } catch (error: any) {
+      console.error('Error creating thread:', error);
+      alert(error.response?.data?.error || 'An error occurred while creating the thread.');
     }
   };
 
@@ -133,10 +121,7 @@ const CreateThread: React.FC = () => {
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <button 
-          onClick={() => navigate(-1)} 
-          className="flex items-center gap-2 text-gray-600 hover:text-blue-600 mb-4"
-        >
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 mb-4">
           <ArrowLeft size={18} />
           <span>Back</span>
         </button>
@@ -153,21 +138,15 @@ const CreateThread: React.FC = () => {
               <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700">
                 Category <span className="text-red-500">*</span>
               </label>
-              <button 
-                type="button" 
-                className="text-gray-500 hover:text-blue-600"
-                onClick={() => setShowCategoryHelp(!showCategoryHelp)}
-              >
+              <button type="button" className="text-gray-500 hover:text-blue-600" onClick={() => setShowCategoryHelp(!showCategoryHelp)}>
                 <HelpCircle size={16} />
               </button>
             </div>
-            
             {showCategoryHelp && (
               <div className="mb-3 p-3 bg-blue-50 text-blue-800 text-sm rounded-md">
                 Select the category that best fits your thread topic. This helps other users find your thread more easily.
               </div>
             )}
-            
             <select
               id="categoryId"
               name="categoryId"
@@ -177,17 +156,15 @@ const CreateThread: React.FC = () => {
             >
               <option value="">Select a category</option>
               {categories.map(category => (
-                <option key={category.id} value={category.id}>
+                <option key={category._id} value={category._id}>
                   {category.name} - {category.description}
                 </option>
               ))}
             </select>
-            {errors.categoryId && (
-              <p className="mt-1 text-sm text-red-500">{errors.categoryId}</p>
-            )}
+            {errors.categoryId && <p className="mt-1 text-sm text-red-500">{errors.categoryId}</p>}
           </div>
 
-          {/* Thread Title */}
+          {/* Title */}
           <div className="mb-6">
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
               Title <span className="text-red-500">*</span>
@@ -204,13 +181,11 @@ const CreateThread: React.FC = () => {
             {errors.title ? (
               <p className="mt-1 text-sm text-red-500">{errors.title}</p>
             ) : (
-              <p className="mt-1 text-xs text-gray-500">
-                A good title clearly communicates what your thread is about
-              </p>
+              <p className="mt-1 text-xs text-gray-500">A good title clearly communicates what your thread is about</p>
             )}
           </div>
 
-          {/* Thread Content */}
+          {/* Content */}
           <div className="mb-6">
             <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
               Content <span className="text-red-500">*</span>
@@ -238,7 +213,7 @@ const CreateThread: React.FC = () => {
             )}
           </div>
 
-          {/* Tags Input */}
+          {/* Tags */}
           <div className="mb-6">
             <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
               Tags <span className="text-gray-500">(optional)</span>
@@ -261,24 +236,18 @@ const CreateThread: React.FC = () => {
                 Add
               </button>
             </div>
-            <p className="text-xs text-gray-500 mb-2">
-              Press Enter or click Add to add a tag.
-            </p>
-            <div className="flex gap-2">
+            <p className="text-xs text-gray-500 mb-2">Press Enter or click Add to add a tag.</p>
+            <div className="flex gap-2 flex-wrap">
               {formData.tags.map(tag => (
                 <span key={tag} className="px-4 py-1 bg-gray-200 text-gray-700 rounded-lg flex items-center gap-1">
                   {tag}
-                  <X
-                    size={12}
-                    onClick={() => handleRemoveTag(tag)}
-                    className="cursor-pointer text-red-500"
-                  />
+                  <X size={12} onClick={() => handleRemoveTag(tag)} className="cursor-pointer text-red-500" />
                 </span>
               ))}
             </div>
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <div className="flex justify-center mt-8">
             <button
               type="submit"
@@ -289,6 +258,8 @@ const CreateThread: React.FC = () => {
           </div>
         </div>
       </form>
+
+      {/* Guidelines */}
       <div className="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
         <h3 className="font-medium text-yellow-800 mb-2">Community Guidelines</h3>
         <ul className="list-disc pl-5 text-sm text-yellow-700 space-y-1">

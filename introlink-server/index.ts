@@ -3,9 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes';
 import { connectDB } from './config/db';
-import forumRoutes from './routes/forumRoutes';
 import { errorHandler } from './middleware/ErrorHandler';
-import homeRoutes from './routes/homeRoutes';
 
     dotenv.config();
 
@@ -18,8 +16,6 @@ import homeRoutes from './routes/homeRoutes';
     
 
     app.use('/api/auth', authRoutes);
-    app.use('/api', forumRoutes);
-    app.use('/api', homeRoutes);
     app.use(errorHandler);
     
 
