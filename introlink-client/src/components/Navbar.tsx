@@ -29,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = () => {
             <a href="/" className="px-3 py-2 text-gray-700 hover:text-blue-600">Home</a>
             <a href="/forum" className="px-3 py-2 text-gray-700 hover:text-blue-600">Forums</a>
             <a href="/journal" className="px-3 py-2 text-gray-700 hover:text-blue-600">Journal</a>
-            <a href="#" className="px-3 py-2 text-gray-700 hover:text-blue-600">AI Chat</a>
+            <a href="/AIChat" className="px-3 py-2 text-gray-700 hover:text-blue-600">AI Chat</a>
             <a href="/profile" className="px-3 py-2 text-gray-700 hover:text-blue-600">Profile</a>
           </div>
 

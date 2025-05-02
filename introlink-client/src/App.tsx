@@ -19,6 +19,8 @@ import EditProfile from "./components/EditProfile";
 import AccountSettings from "./components/AccountSettings";
 import PrivacyPreferences from "./components/PrivacyPreferences";
 import AvatarUploader from "./components/AvatarUploader";
+import AIChatPage from "./pages/AIChatPage";
+import AIMessageBubble from "./components/AIMessageBubble";
 
 function App() {
   const shashank = {
@@ -82,14 +84,25 @@ function App() {
             />
           }
         />
-      <Route path="/profile" element={<ProfilePage/>} />
-      <Route path="/profile/edit" element={<EditProfile/>} />
-      <Route path="/setting" element={<AccountSettings/>} />
-      <Route path="/privacy" element={<PrivacyPreferences/>} />
-      <Route path="/avatar" element={<AvatarUploader/>} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/edit" element={<EditProfile />} />
+        <Route path="/setting" element={<AccountSettings />} />
+        <Route path="/privacy" element={<PrivacyPreferences />} />
+        <Route path="/avatar" element={<AvatarUploader />} />
+        <Route path="/AIChat" element={<AIChatPage />} />
+        <Route
+          path="/bubble"
+          element={
+            <AIMessageBubble
+              content="Here is a code block:\n```js\nconsole.log('Hello');\n```"
+              sender="ai"
+              timestamp={new Date()}
+            />
+          }
+        />
       </Routes>
     </Router>
   );
-  }
+}
 
-  export default App;
+export default App;
