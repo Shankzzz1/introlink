@@ -4,6 +4,7 @@ import cors from 'cors';
 import authRoutes from './routes/authRoutes';
 import { connectDB } from './config/db';
 import { errorHandler } from './middleware/ErrorHandler';
+import threadRoutes from './routes/threadroutes';
 
     dotenv.config();
 
@@ -16,6 +17,7 @@ import { errorHandler } from './middleware/ErrorHandler';
     
 
     app.use('/api/auth', authRoutes);
+    app.use('/api', threadRoutes);
     app.use(errorHandler);
     
 

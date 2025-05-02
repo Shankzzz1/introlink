@@ -28,7 +28,7 @@ const CreateThread: React.FC = () => {
 
   // Fetch categories from backend
   useEffect(() => {
-    axios.get('http://localhost:5000/api/createthread')
+    axios.get('http://localhost:5000/api/categories')
       .then(res => setCategories(res.data))
       .catch(err => console.error('Error fetching categories:', err));
   }, []);
@@ -100,12 +100,15 @@ const CreateThread: React.FC = () => {
     if (!validateForm()) return;
 
     try {
-      const response = await axios.post('http://localhost:5000/api/threads/threads', {
+      const response = await axios.post('http://localhost:5000/api/threads', {
         title: formData.title,
         content: formData.content,
         categoryId: formData.categoryId,
         tags: formData.tags
+        
       });
+      console.log("Test")
+      console.log('Category ID being sent:', formData.categoryId);
 
       if (response.status === 201) {
         alert('Thread created successfully!');

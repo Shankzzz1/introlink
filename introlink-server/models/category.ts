@@ -1,19 +1,40 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ICategory extends Document {
   name: string;
   description: string;
-  icon: string;
-  color: string;
-  threadCount: number;
+  icon?: string;
+  color?: string;
+  threadCount?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-const CategorySchema = new Schema<ICategory>({
-  name: String,
-  description: String,
-  icon: String,
-  color: String,
-  threadCount: Number,
+const CategorySchema: Schema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  icon: {
+    type: String,
+    default: '',
+  },
+  color: {
+    type: String,
+    default: '#000000',
+  },
+  threadCount: {
+    type: Number,
+    default: 0,
+  }
+}, {
+  timestamps: true,
 });
 
-export default mongoose.model<ICategory>('Category', CategorySchema);
+const Category = mongoose.model<ICategory>('Category', CategorySchema);
+export default Category;
