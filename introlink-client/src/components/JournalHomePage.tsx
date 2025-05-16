@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, Plus, Search, Star, Tag, Grid, List } from 'lucide-react';
+import Navbar from './Navbar';
 
 // Types
 interface JournalEntry {
@@ -140,8 +141,9 @@ const JournalHomePage = () => {
     setEntries(updatedEntries);
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
+  return (  
+    <>
+        <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
@@ -332,6 +334,7 @@ const JournalHomePage = () => {
         )}
       </main>
     </div>
+  </>
   );
 };
 

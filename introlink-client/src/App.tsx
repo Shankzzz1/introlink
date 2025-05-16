@@ -21,6 +21,7 @@ import PrivacyPreferences from "./components/PrivacyPreferences";
 import AvatarUploader from "./components/AvatarUploader";
 import AIChatPage from "./pages/AIChatPage";
 import AIMessageBubble from "./components/AIMessageBubble";
+import Journal from "./pages/Journal";
 
 function App() {
   const shashank = {
@@ -54,7 +55,7 @@ function App() {
             />
           }
         />
-        <Route path="/journal" element={<JournalHomePage />} />
+        <Route path="/journal" element={<Journal />} />
         <Route path="/createJournal" element={<CreateJournalEntry />} />
         <Route path="/viewentry" element={<ViewJournalEntry />} />
         <Route path="/editentry" element={<EditJournalEntry />} />
